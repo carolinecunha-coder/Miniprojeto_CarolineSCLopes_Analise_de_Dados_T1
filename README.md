@@ -11,23 +11,24 @@
 
 O projeto foi desenvolvido e testado localmente utilizando o **VS Code** e a linguagem **Python**.
 
-Para executar a análise:
-
 ## Requisitos
 
 - Python 3.x instalado
-- Bibliotecas:
-  - pandas
-  - numpy
-  - matplotlib
+- Bibliotecas listadas no arquivo `requirements.txt`
 
-## Instalação das bibliotecas
+---
+
+## 📦 Instalação das Dependências
+
+Execute o comando abaixo no terminal:
 
 ```bash
-pip install pandas numpy matplotlib
+pip install -r requirements.txt
 ```
 
-## Execução do projeto
+---
+
+## ▶️ Execução do Projeto
 
 O arquivo bruto `Base_Varejo.csv` deve estar localizado na raiz da pasta do projeto.
 
@@ -39,7 +40,7 @@ python main.py
 
 Após a execução, o script irá:
 
-- realizar a limpeza dos dados
+- realizar a limpeza e tratamento dos dados
 - gerar estatísticas descritivas
 - produzir agrupamentos analíticos
 - criar gráficos exploratórios
@@ -125,9 +126,26 @@ Miniprojeto_CarolineSCLopes_Analise_de_Dados_T1/
 ├── df_limpo.csv
 ├── main.py
 ├── README.md
+├── requirements.txt
 └── imagens/
     ├── grafico_categoria.png
     └── grafico_produtos.png
+```
+
+---
+
+# 📦 Dependências do Projeto
+
+As bibliotecas utilizadas neste projeto estão listadas no arquivo:
+
+```text
+requirements.txt
+```
+
+Para instalar todas as dependências automaticamente, execute:
+
+```bash
+pip install -r requirements.txt
 ```
 
 ---
