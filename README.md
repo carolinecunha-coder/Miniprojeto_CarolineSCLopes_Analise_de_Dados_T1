@@ -15,7 +15,7 @@ O projeto foi totalmente desenvolvido e testado no ecossistema local utilizando 
 ```bash
 python main.py
 
-2. Reflexão Teórica: O Papel Crítico do ETL e da Qualidade de Dados
+## 2. Reflexão Teórica: O Papel Crítico do ETL e da Qualidade de Dados
 O acrônimo ETL (Extract, Transform, Load) representa a espinha dorsal da Engenharia e da Análise de Dados moderna. Em ambientes corporativos reais, os dados brutos extraídos diretamente de sistemas de transação (como PDVs e e-commerces) são inerentemente "sujos" e instáveis, contendo ruídos operacionais, falhas de sincronismo de rede, registros duplicados por reenvio de pacotes e ausência de preenchimento em campos cadastrais.
 
 A fase de Transformação (Transform) desempenha um papel científico e estratégico essencial antes de qualquer tomada de decisão:
@@ -28,7 +28,7 @@ A fase de Transformação (Transform) desempenha um papel científico e estraté
 
 Garantir a integridade dos dados nesta etapa evita o fenômeno conhecido como Garbage In, Garbage Out (Entrada de Lixo, Saída de Lixo), certificando que os dashboards de Business Intelligence reflitam fielmente a realidade da operação.
 
-3. Relatório de Conclusões e Insights Operacionais
+## 3. Relatório de Conclusões e Insights Operacionais
 A execução do pipeline de dados gerou os seguintes indicadores estruturais e de negócios:
 
 Insight 1 (Dominância de Portfólio): A categoria Alimentos é o principal motor volumétrico do varejo analisado, acumulando expressivas 9.672 movimentações. Em contrapartida, a categoria Acessórios detém a menor participação de gôndola, registrando apenas 327 operações. Campanhas de cross-selling podem usar a alta tração de alimentos para alavancar categorias menores.

@@ -1,133 +1,204 @@
-import csv
-import datetime
-import numpy as np
+# ==========================================
+# MINI-PROJETO - ANÁLISE EXPLORATÓRIA DE DADOS
+# Aluna: Caroline de Souza Cunha Lopes
+# ==========================================
+
+# =========================
+# IMPORTAÇÃO DAS BIBLIOTECAS
+# =========================
+
 import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
 
-# =========================================================================
-# SPRINT 1: IMPORTAÇÃO E RECONHECIMENTO DOS DADOS
-# =========================================================================
-print("--- SPRINT 1: Carregando a Base de Dados Real ---")
+# =========================
+# LEITURA DA BASE DE DADOS
+# =========================
 
-nome_arquivo = "Base Varejo.csv/Base Varejo.csv"
+print("Lendo base de dados...")
 
-try:
-    # Diagnóstico estrutural rápido usando Pandas
-    df_diagnostico = pd.read_csv(nome_arquivo, sep=';', on_bad_lines='skip')
-    
-    print(f"✅ Arquivo '{nome_arquivo}' mapeado com sucesso!")
-    print(f"• Total de registros originais: {df_diagnostico.shape[0]}")
-    print(f"• Colunas identificadas na base: {list(df_diagnostico.columns.values)[:10]}\n")
-    
-except FileNotFoundError:
-    # Fallback caso o arquivo esteja solto na raiz
-    nome_arquivo = "Base Varejo.csv"
-    try:
-        df_diagnostico = pd.read_csv(nome_arquivo, sep=';', on_bad_lines='skip')
-        print(f"✅ Arquivo '{nome_arquivo}' mapeado com sucesso na raiz!")
-        print(f"• Total de registros originais: {df_diagnostico.shape[0]}\n")
-    except FileNotFoundError:
-        print(f"❌ Erro: O arquivo '{nome_arquivo}' não foi encontrado.")
+df = pd.read_csv("Base_Varejo.csv", sep=";", encoding="latin1")
 
+print("\nBase carregada com sucesso!")
 
-# =========================================================================
-# SPRINT 2 & 3: TRATAMENTO DE NULOS E DATAS (Módulo Datetime + csv.DictReader)
-# =========================================================================
-print("--- SPRINT 2 & 3: Iniciando Limpeza Estruturada ---")
+# =========================
+# VISUALIZAÇÃO INICIAL
+# =========================
 
-dados_limpos = []
+print("\nPrimeiras linhas da base:")
+print(df.head())
 
-# Critério 3: Leitura estruturada e nativa usando csv.DictReader
-with open(nome_arquivo, mode="r", encoding="utf-8") as arquivo:
-    leitor = csv.DictReader(arquivo, delimiter=';')
-    
-    for linha in leitor:
-        # Critério 4: Lógica if/else para preencher categorias vazias (PR_CAT)
-        if not linha.get("PR_CAT") or linha["PR_CAT"].strip() == "":
-            linha["PR_CAT"] = "Sem Categoria"
-            
-        # Tratamento de nulos na coluna de número de filhos (CL_FHL)
-        if not linha.get("CL_FHL") or linha["CL_FHL"].strip() == "" or linha["CL_FHL"] == "NaN":
-            linha["CL_FHL"] = None  # Será tratado com a mediana logo abaixo
-            
-        # Critério 5: Converter a string de data utilizando o módulo datetime nativo
-        data_original = linha.get("DATA")
-        if data_original:
-            try:
-                linha["DATA"] = datetime.datetime.strptime(data_original, "%d/%m/%Y").date()
-            except ValueError:
-                linha["DATA"] = None
+print("\nInformações gerais:")
+print(df.info())
 
-        dados_limpos.append(linha)
+print("\nValores nulos:")
+print(df.isnull().sum())
 
-# Transforma a lista limpa em DataFrame para aplicar validações de negócio e regras estatísticas
-df_varejo = pd.DataFrame(dados_limpos)
+# =========================
+# REMOÇÃO DE DUPLICIDADES
+# =========================
 
-# Ajustando tipos numéricos
-if 'PR_ID' in df_varejo.columns:
-    df_varejo["Valor_Venda"] = pd.to_numeric(df_varejo["PR_ID"], errors='coerce').fillna(10.0)
+df = df.drop_duplicates()
 
-df_varejo["CL_FHL"] = pd.to_numeric(df_varejo["CL_FHL"], errors='coerce')
+print("\nDuplicidades removidas!")
 
-# Preenchendo os filhos nulos com a mediana
-mediana_filhos = df_varejo["CL_FHL"].median()
-if pd.isna(mediana_filhos):
-    mediana_filhos = 0
-df_varejo["CL_FHL"] = df_varejo["CL_FHL"].fillna(mediana_filhos)
+# =========================
+# LIMPEZA DE COLUNAS TEXTUAIS
+# =========================
 
-# Critério 5: Validar a regra do identificador de compra (remover duplicatas de CO_ID)
-df_varejo = df_varejo.drop_duplicates(subset=["CO_ID"], keep="first")
+# Exemplo para coluna Produto
+if "Produto" in df.columns:
+    df["Produto"] = df["Produto"].str.strip().str.title()
 
-print("✅ Processamento, limpeza e tratamento de tipos concluídos!\n")
+# Exemplo para coluna Categoria
+if "Categoria" in df.columns:
+    df["Categoria"] = df["Categoria"].str.strip().str.title()
 
+# =========================
+# TRATAMENTO DE VALORES MONETÁRIOS
+# =========================
 
-# =========================================================================
-# SPRINT 4: ESTATÍSTICA DESCRITIVA (Coluna: CL_FHL - Número de Filhos)
-# =========================================================================
-print("--- SPRINT 4: Estatística Descritiva (Número de Filhos) ---")
+# Verifica se a coluna Valor existe
+if "Valor" in df.columns:
 
-contagem = df_varejo["CL_FHL"].count()
-media = df_varejo["CL_FHL"].mean()
-mediana = df_varejo["CL_FHL"].median()
-desvio_padrao = df_varejo["CL_FHL"].std()
-minimo = df_varejo["CL_FHL"].min()
-maximo = df_varejo["CL_FHL"].max()
+    # Remove R$, pontos e ajusta vírgula
+    df["Valor"] = (
+        df["Valor"]
+        .astype(str)
+        .str.replace("R$", "", regex=False)
+        .str.replace(".", "", regex=False)
+        .str.replace(",", ".", regex=False)
+        .str.strip()
+    )
 
-moda_series = df_varejo["CL_FHL"].mode()
-moda = moda_series[0] if not moda_series.empty else np.nan
+    # Converte para número
+    df["Valor"] = pd.to_numeric(df["Valor"], errors="coerce")
 
-q1 = df_varejo["CL_FHL"].quantile(0.25)
-q2 = df_varejo["CL_FHL"].quantile(0.50)
-q3 = df_varejo["CL_FHL"].quantile(0.75)
+    print("\nColuna Valor convertida com sucesso!")
 
-print(f"• Contagem Total: {contagem}")
-print(f"• Média: {media:.2f}")
-print(f"• Mediana: {mediana:.2f}")
-print(f"• Desvio Padrão: {desvio_padrao:.2f}" if not pd.isna(desvio_padrao) else "• Desvio Padrão: 0.00")
-print(f"• Moda: {moda}")
-print(f"• Mínimo: {minimo}")
-print(f"• Máximo: {maximo}")
-print(f"• Quartil 1 (25%): {q1}")
-print(f"• Quartil 2 (50%/Mediana): {q2}")
-print(f"• Quartil 3 (75%): {q3}\n")
+# =========================
+# TRATAMENTO DE DATAS
+# =========================
 
+# Verifica se existe coluna Data
+if "Data" in df.columns:
 
-# =========================================================================
-# SPRINT 5: PADRÕES DE AGRUPAMENTO (Relatório no Terminal)
-# =========================================================================
-print("--- SPRINT 5: Padrões de Agrupamento ---")
+    df["Data"] = pd.to_datetime(
+        df["Data"],
+        dayfirst=True,
+        errors="coerce"
+    )
 
-print("\n[Agrupamento 1] Total de Compras por Gênero do Cliente:")
-agrup_genero = df_varejo.groupby("CL_GENERO").agg(
-    Qtd_Compras=("CO_ID", "count")
-).reset_index()
-print(agrup_genero)
+    print("\nDatas convertidas!")
 
-print("\n[Agrupamento 2] Volume de Movimentações por Categoria de Produto:")
-agrup_cat = df_varejo.groupby("PR_CAT").agg(
-    Total_Registros=("CO_ID", "count")
-).reset_index()
-print(agrup_cat)
+# =========================
+# TRATAMENTO DE VALORES NULOS
+# =========================
 
-# Salvando a base final tratada
-df_varejo.to_csv("df_limpo.csv", index=False, sep=';')
-print("\n✅ Script finalizado! O arquivo 'df_limpo.csv' foi gerado com sucesso.")
+# Preenchimento da mediana para Valor
+if "Valor" in df.columns:
+
+    mediana_valor = df["Valor"].median()
+
+    df["Valor"] = df["Valor"].fillna(mediana_valor)
+
+    print("\nValores nulos preenchidos com mediana!")
+
+# =========================
+# ANÁLISES EXPLORATÓRIAS
+# =========================
+
+print("\n========== ANÁLISES ==========")
+
+# Faturamento total
+if "Valor" in df.columns:
+
+    faturamento_total = df["Valor"].sum()
+
+    print(f"\nFaturamento Total: R$ {faturamento_total:,.2f}")
+
+# Produtos mais vendidos
+if "Produto" in df.columns:
+
+    print("\nTop 10 Produtos Mais Vendidos:")
+
+    print(df["Produto"].value_counts().head(10))
+
+# Faturamento por categoria
+if "Categoria" in df.columns and "Valor" in df.columns:
+
+    print("\nFaturamento por Categoria:")
+
+    print(
+        df.groupby("Categoria")["Valor"]
+        .sum()
+        .sort_values(ascending=False)
+    )
+
+# =========================
+# CRIAÇÃO DOS GRÁFICOS
+# =========================
+
+# Gráfico 1 - Faturamento por Categoria
+if "Categoria" in df.columns and "Valor" in df.columns:
+
+    faturamento_categoria = (
+        df.groupby("Categoria")["Valor"]
+        .sum()
+        .sort_values(ascending=False)
+    )
+
+    plt.figure(figsize=(10, 5))
+
+    faturamento_categoria.plot(kind="bar")
+
+    plt.title("Faturamento por Categoria")
+
+    plt.ylabel("Valor Total")
+
+    plt.xticks(rotation=45)
+
+    plt.tight_layout()
+
+    plt.savefig("grafico_categoria.png")
+
+    plt.show()
+
+    print("\nGráfico de faturamento salvo!")
+
+# Gráfico 2 - Produtos Mais Vendidos
+if "Produto" in df.columns:
+
+    top_produtos = df["Produto"].value_counts().head(10)
+
+    plt.figure(figsize=(10, 5))
+
+    top_produtos.plot(kind="bar")
+
+    plt.title("Top 10 Produtos Mais Vendidos")
+
+    plt.ylabel("Quantidade")
+
+    plt.xticks(rotation=45)
+
+    plt.tight_layout()
+
+    plt.savefig("grafico_produtos.png")
+
+    plt.show()
+
+    print("\nGráfico de produtos salvo!")
+
+# =========================
+# EXPORTAÇÃO DA BASE LIMPA
+# =========================
+
+df.to_csv("df_limpo.csv", index=False)
+
+print("\nBase limpa exportada com sucesso!")
+
+# =========================
+# FINALIZAÇÃO
+# =========================
+
+print("\nProjeto executado com sucesso!")
