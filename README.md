@@ -8,8 +8,8 @@
 
 O projeto foi totalmente desenvolvido e testado no ecossistema local utilizando o **VS Code**. Para reproduzir a análise e gerar os relatórios:
 
-1. Certifique-se de possuir o Python 3.x instalado em sua máquina, juntamente com as bibliotecas `pandas` e `numpy`.
-2. Garanta que o arquivo bruto `Base Varejo.csv` esteja localizado exatamente na raiz da pasta do projeto.
+1. É necessário ter o Python 3.x instalado em sua máquina, juntamente com as bibliotecas `pandas` e `numpy`.
+2. O arquivo bruto `Base Varejo.csv` estejadeve estar localizado exatamente na raiz da pasta do projeto.
 3. Abra o terminal do VS Code e execute o comando:
 ```bash
 python main.py
