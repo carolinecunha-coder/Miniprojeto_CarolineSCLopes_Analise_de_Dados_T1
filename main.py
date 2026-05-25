@@ -46,45 +46,34 @@ print("\nDuplicidades removidas!")
 # LIMPEZA DE COLUNAS TEXTUAIS
 # =========================
 
-# Exemplo para coluna Produto
-if "Produto" in df.columns:
-    df["Produto"] = df["Produto"].str.strip().str.title()
+# Produto
+if "PR_NOME" in df.columns:
 
-# Exemplo para coluna Categoria
-if "Categoria" in df.columns:
-    df["Categoria"] = df["Categoria"].str.strip().str.title()
-
-# =========================
-# TRATAMENTO DE VALORES MONETÁRIOS
-# =========================
-
-# Verifica se a coluna Valor existe
-if "Valor" in df.columns:
-
-    # Remove R$, pontos e ajusta vírgula
-    df["Valor"] = (
-        df["Valor"]
+    df["PR_NOME"] = (
+        df["PR_NOME"]
         .astype(str)
-        .str.replace("R$", "", regex=False)
-        .str.replace(".", "", regex=False)
-        .str.replace(",", ".", regex=False)
         .str.strip()
+        .str.title()
     )
 
-    # Converte para número
-    df["Valor"] = pd.to_numeric(df["Valor"], errors="coerce")
+# Categoria
+if "PR_CAT" in df.columns:
 
-    print("\nColuna Valor convertida com sucesso!")
+    df["PR_CAT"] = (
+        df["PR_CAT"]
+        .astype(str)
+        .str.strip()
+        .str.upper()
+    )
 
 # =========================
 # TRATAMENTO DE DATAS
 # =========================
 
-# Verifica se existe coluna Data
-if "Data" in df.columns:
+if "DATA" in df.columns:
 
-    df["Data"] = pd.to_datetime(
-        df["Data"],
+    df["DATA"] = pd.to_datetime(
+        df["DATA"],
         dayfirst=True,
         errors="coerce"
     )
@@ -95,87 +84,92 @@ if "Data" in df.columns:
 # TRATAMENTO DE VALORES NULOS
 # =========================
 
-# Preenchimento da mediana para Valor
-if "Valor" in df.columns:
+# Número de filhos
+if "CL_FHL" in df.columns:
 
-    mediana_valor = df["Valor"].median()
+    mediana_filhos = df["CL_FHL"].median()
 
-    df["Valor"] = df["Valor"].fillna(mediana_valor)
+    df["CL_FHL"] = df["CL_FHL"].fillna(mediana_filhos)
 
-    print("\nValores nulos preenchidos com mediana!")
+    print("\nValores nulos tratados!")
 
 # =========================
-# ANÁLISES EXPLORATÓRIAS
+# ESTATÍSTICA DESCRITIVA
 # =========================
 
-print("\n========== ANÁLISES ==========")
+print("\n========== ESTATÍSTICA DESCRITIVA ==========")
 
-# Faturamento total
-if "Valor" in df.columns:
+if "CL_FHL" in df.columns:
 
-    faturamento_total = df["Valor"].sum()
+    print(f"\nContagem Total: {df['CL_FHL'].count()}")
 
-    print(f"\nFaturamento Total: R$ {faturamento_total:,.2f}")
+    print(f"Média: {df['CL_FHL'].mean():.2f}")
 
-# Produtos mais vendidos
-if "Produto" in df.columns:
+    print(f"Mediana: {df['CL_FHL'].median():.2f}")
 
-    print("\nTop 10 Produtos Mais Vendidos:")
+    print(f"Desvio Padrão: {df['CL_FHL'].std():.2f}")
 
-    print(df["Produto"].value_counts().head(10))
+    print(f"Moda: {df['CL_FHL'].mode()[0]}")
 
-# Faturamento por categoria
-if "Categoria" in df.columns and "Valor" in df.columns:
+    print(f"Mínimo: {df['CL_FHL'].min()}")
 
-    print("\nFaturamento por Categoria:")
+    print(f"Máximo: {df['CL_FHL'].max()}")
 
-    print(
-        df.groupby("Categoria")["Valor"]
-        .sum()
-        .sort_values(ascending=False)
+    print(f"Quartil 1 (25%): {df['CL_FHL'].quantile(0.25)}")
+
+    print(f"Quartil 2 (50%): {df['CL_FHL'].quantile(0.50)}")
+
+    print(f"Quartil 3 (75%): {df['CL_FHL'].quantile(0.75)}")
+
+# =========================
+# AGRUPAMENTOS
+# =========================
+
+print("\n========== AGRUPAMENTOS ==========")
+
+# Compras por gênero
+if "CL_GENERO" in df.columns:
+
+    compras_genero = (
+        df.groupby("CL_GENERO")
+        .size()
+        .reset_index(name="Qtd_Compras")
     )
+
+    print("\nCompras por Gênero:")
+
+    print(compras_genero)
+
+# Volume por categoria
+if "PR_CAT" in df.columns:
+
+    categorias = (
+        df.groupby("PR_CAT")
+        .size()
+        .reset_index(name="Total_Registros")
+    )
+
+    print("\nVolume por Categoria:")
+
+    print(categorias)
 
 # =========================
 # CRIAÇÃO DOS GRÁFICOS
 # =========================
 
-# Gráfico 1 - Faturamento por Categoria
-if "Categoria" in df.columns and "Valor" in df.columns:
+# -------------------------
+# GRÁFICO 1 - CATEGORIAS
+# -------------------------
 
-    faturamento_categoria = (
-        df.groupby("Categoria")["Valor"]
-        .sum()
-        .sort_values(ascending=False)
-    )
+if "PR_CAT" in df.columns:
 
-    plt.figure(figsize=(10, 5))
-
-    faturamento_categoria.plot(kind="bar")
-
-    plt.title("Faturamento por Categoria")
-
-    plt.ylabel("Valor Total")
-
-    plt.xticks(rotation=45)
-
-    plt.tight_layout()
-
-    plt.savefig("grafico_categoria.png")
-
-    plt.show()
-
-    print("\nGráfico de faturamento salvo!")
-
-# Gráfico 2 - Produtos Mais Vendidos
-if "Produto" in df.columns:
-
-    top_produtos = df["Produto"].value_counts().head(10)
+    categorias_grafico = df["PR_CAT"].value_counts()
 
     plt.figure(figsize=(10, 5))
 
-    top_produtos.plot(kind="bar")
+    categorias_grafico.plot(kind="bar")
 
-    plt.title("Top 10 Produtos Mais Vendidos")
+    plt.title("Quantidade por Categoria")
 
     plt.ylabel("Quantidade")
 
@@ -183,7 +177,33 @@ if "Produto" in df.columns:
 
     plt.tight_layout()
 
-    plt.savefig("grafico_produtos.png")
+    plt.savefig("imagens/grafico_categoria.png")
+
+    plt.show()
+
+    print("\nGráfico de categorias salvo!")
+
+# -------------------------
+# GRÁFICO 2 - PRODUTOS
+# -------------------------
+
+if "PR_NOME" in df.columns:
+
+    produtos_grafico = df["PR_NOME"].value_counts().head(10)
+
+    plt.figure(figsize=(12, 5))
+
+    produtos_grafico.plot(kind="bar")
+
+    plt.title("Top 10 Produtos")
+
+    plt.ylabel("Quantidade")
+
+    plt.xticks(rotation=45)
+
+    plt.tight_layout()
+
+    plt.savefig("imagens/grafico_produtos.png")
 
     plt.show()
 

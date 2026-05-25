@@ -1,42 +1,160 @@
-# Mini-Projeto Avaliativo: Análise Exploratória de Dados (Varejo)
-**Módulo 1 - Semana 07 — Análise de Dados com Python** 
+# 📊 Mini-Projeto Avaliativo: Análise Exploratória de Dados (Varejo)
+
+## Módulo 1 - Semana 07 — Análise de Dados com Python
+
 **Aluna:** Caroline de Souza Cunha Lopes  
 **Turma:** T1  
 
 ---
 
-## 1. Instruções de Execução
+# 📌 1. Instruções de Execução
 
-O projeto foi totalmente desenvolvido e testado no ecossistema local utilizando o **VS Code**. Para reproduzir a análise e gerar os relatórios:
+O projeto foi desenvolvido e testado localmente utilizando o **VS Code** e a linguagem **Python**.
 
-1. É necessário ter o Python 3.x instalado no computador, junto com as bibliotecas `pandas` e `numpy`.
-2. O arquivo bruto `Base Varejo.csv` deve estar localizado exatamente na raiz da pasta do projeto.
-3. Abra o terminal do VS Code e execute o comando abaixo para rodar a automação:
+Para executar a análise:
+
+## Requisitos
+
+- Python 3.x instalado
+- Bibliotecas:
+  - pandas
+  - numpy
+  - matplotlib
+
+## Instalação das bibliotecas
+
+```bash
+pip install pandas numpy matplotlib
+```
+
+## Execução do projeto
+
+O arquivo bruto `Base_Varejo.csv` deve estar localizado na raiz da pasta do projeto.
+
+Execute o comando abaixo no terminal:
+
 ```bash
 python main.py
+```
 
-## 2. Reflexão Teórica: O Papel Crítico do ETL e da Qualidade de Dados
-O acrônimo ETL (Extract, Transform, Load) representa a espinha dorsal da Engenharia e da Análise de Dados moderna. Em ambientes corporativos reais, os dados brutos extraídos diretamente de sistemas de transação (como PDVs e e-commerces) são inerentemente "sujos" e instáveis, contendo ruídos operacionais, falhas de sincronismo de rede, registros duplicados por reenvio de pacotes e ausência de preenchimento em campos cadastrais.
+Após a execução, o script irá:
 
-A fase de Transformação (Transform) desempenha um papel científico e estratégico essencial antes de qualquer tomada de decisão:
+- realizar a limpeza dos dados
+- gerar estatísticas descritivas
+- produzir agrupamentos analíticos
+- criar gráficos exploratórios
+- exportar o arquivo tratado `df_limpo.csv`
 
--Manipulação Estruturada Nativa: A utilização do módulo csv.DictReader permite ler e isolar cada linha do arquivo como um dicionário estruturado de chaves e valores. Isso garante o controle granular do dado em baixo nível antes de submetê-lo a estruturas mais pesadas de memória.
+---
 
--Tipagem Temporal Rigorosa: A conversão de strings brutas contendo formatos de data inconsistentes para objetos reais datetime.date padroniza a cronologia dos eventos, viabilizando análises de cohort, sazonalidade e séries temporais legítimas.
+# 📚 2. Reflexão Teórica: O Papel do ETL e da Qualidade de Dados
 
--A Ciência do Tratamento de Nulos: Na dimensão física CL_FHL (Número de Filhos), a escolha técnica de imputar a mediana em substituição aos valores nulos (NaN) mitiga as distorções causadas por possíveis outliers (valores extremos). Excluir as linhas reduziria o tamanho amostral de forma severa, enquanto usar a média poderia enviesar a distribuição populacional. A mediana preserva a tendência central de forma matematicamente segura.
+O processo ETL (Extract, Transform, Load) representa uma etapa fundamental da Engenharia e da Análise de Dados moderna. Em ambientes corporativos, os dados extraídos de sistemas transacionais frequentemente apresentam inconsistências, registros duplicados, valores ausentes e problemas de padronização.
 
-Garantir a integridade dos dados nesta etapa evita o fenômeno conhecido como Garbage In, Garbage Out (Entrada de Lixo, Saída de Lixo), certificando que os dashboards de Business Intelligence reflitam fielmente a realidade da operação.
+Neste projeto, a etapa de transformação foi essencial para garantir a qualidade analítica da base de varejo utilizada.
 
-## 3. Relatório de Conclusões e Insights Operacionais
-A execução do pipeline de dados gerou os seguintes indicadores estruturais e de negócios:
+As principais práticas aplicadas foram:
 
-Insight 1 (Dominância de Portfólio): A categoria Alimentos é o principal motor volumétrico do varejo analisado, acumulando expressivas 9.672 movimentações. Em contrapartida, a categoria Acessórios detém a menor participação de gôndola, registrando apenas 327 operações. Campanhas de cross-selling podem usar a alta tração de alimentos para alavancar categorias menores.
+- leitura estruturada da base utilizando pandas
+- identificação e tratamento de valores nulos
+- remoção de registros duplicados
+- padronização de colunas textuais
+- conversão de datas para o formato datetime
+- aplicação de estatística descritiva
+- geração de agrupamentos analíticos
 
-Insight 2 (Saneamento de Cadastro): Foram detectadas e tratadas diversas linhas onde a categoria do produto encontrava-se vazia. Ao aplicar a regra de negócio condicional if/else, esses registros foram mapeados como "Sem Categoria". Isso indica um gargalo técnico no ERP de origem, evidenciando que o campo de categoria não está configurado como obrigatório no momento do cadastro do item.
+Na coluna `CL_FHL` (Número de Filhos), foi utilizada a mediana para imputação dos valores nulos. Essa estratégia reduz o impacto de possíveis valores extremos (outliers) e preserva melhor a distribuição original dos dados.
 
-Insight 3 (Comportamento de Compra por Gênero): O primeiro agrupamento estatístico automatizado isolou a volumetria de compras por gênero (CL_GENERO), revelando a exata distribuição de transações comerciais na base e oferecendo insumos para a personalização de jornadas de marketing.
+Garantir a integridade dos dados nesta etapa evita o fenômeno conhecido como **Garbage In, Garbage Out**, onde dados inconsistentes geram análises incorretas e decisões equivocadas.
 
-Problema Remanescente 1 (Qualidade do Extrator): A presença de delimitadores sobressalentes (como ;;; no final de cada registro observado no arquivo bruto) aponta que o script de exportação do banco de dados relacional de origem necessita de manutenção em suas configurações de fim de linha (End of Line).
+---
 
-Problema Remanescente 2 (Inconsistência de IDs): Foram identificados registros com inconsistências de caracteres em colunas identificadoras, o que exigiu blindagem de código com o argumento errors='coerce' para evitar a interrupção abrupta (crash) da aplicação durante a conversão em lote.
+# 📈 3. Relatório de Conclusões e Insights Operacionais
+
+A análise exploratória permitiu identificar padrões relevantes na base de varejo.
+
+## Principais Insights
+
+### Insight 1 — Categoria com Maior Volume
+
+A categoria **ALIMENTOS** apresentou o maior volume de movimentações da base, totalizando 9.672 registros. Isso demonstra forte representatividade dessa categoria nas operações do varejo analisado.
+
+---
+
+### Insight 2 — Categorias com Menor Participação
+
+A categoria **ACESSORIOS** apresentou baixa participação em comparação às demais categorias, indicando potencial para estratégias de marketing e cross-selling.
+
+---
+
+### Insight 3 — Distribuição de Compras por Gênero
+
+A análise agrupada por `CL_GENERO` demonstrou diferença no volume de compras entre os gêneros, fornecendo informações relevantes para segmentação comercial e ações de relacionamento com clientes.
+
+---
+
+### Insight 4 — Qualidade dos Dados
+
+Foram identificados registros com valores ausentes e inconsistências cadastrais, especialmente em categorias de produtos. Esses problemas exigiram tratamento de dados antes da realização das análises.
+
+---
+
+### Insight 5 — Importância da Limpeza de Dados
+
+A remoção de duplicidades e a padronização das informações foram fundamentais para aumentar a confiabilidade estatística da análise exploratória.
+
+---
+
+# 🛠️ Tecnologias Utilizadas
+
+- Python
+- Pandas
+- NumPy
+- Matplotlib
+- VS Code
+- Git e GitHub
+
+---
+
+# 📂 Estrutura do Projeto
+
+```text
+Miniprojeto_CarolineSCLopes_Analise_de_Dados_T1/
+│
+├── Base_Varejo.csv
+├── df_limpo.csv
+├── main.py
+├── README.md
+└── imagens/
+    ├── grafico_categoria.png
+    └── grafico_produtos.png
+```
+
+---
+
+# 📊 Visualizações
+
+## Quantidade por Categoria
+
+![Categorias](imagens/grafico_categoria.png)
+
+---
+
+## Top 10 Produtos
+
+![Produtos](imagens/grafico_produtos.png)
+
+---
+
+# 🚀 Considerações Finais
+
+O desenvolvimento deste mini-projeto permitiu aplicar conceitos fundamentais de:
+
+- ETL
+- limpeza e transformação de dados
+- análise exploratória
+- estatística descritiva
+- agrupamentos analíticos
+- versionamento com Git e GitHub
+
+Além do aprendizado técnico, o projeto reforçou a importância da qualidade dos dados para apoiar análises confiáveis e tomadas de decisão mais assertivas.
