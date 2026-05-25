@@ -11,10 +11,10 @@ O projeto foi totalmente desenvolvido e testado no ecossistema local utilizando 
 1. Certifique-se de possuir o Python 3.x instalado em sua máquina, juntamente com as bibliotecas `pandas` e `numpy`.
 2. Garanta que o arquivo bruto `Base Varejo.csv` esteja localizado exatamente na raiz da pasta do projeto.
 3. Abra o terminal do VS Code e execute o comando:
-   ```bash
-   python main.py
+```bash
+python main.py
 
-   ## 2. Reflexão Teórica: O Papel Crítico do ETL e da Qualidade de Dados
+## 2. Reflexão Teórica: O Papel Crítico do ETL e da Qualidade de Dados
 
 O acrônimo **ETL (Extract, Transform, Load)** representa a espinha dorsal da Engenharia e da Análise de Dados moderna. Em ambientes corporativos reais, os dados brutos extraídos diretamente de sistemas de transação (como PDVs e e-commerces) são inerentemente "sujos" e instáveis, contendo ruídos operacionais, falhas de sincronismo de rede, registros duplicados por reenvio de pacotes e ausência de preenchimento em campos cadastrais.
 
@@ -33,7 +33,7 @@ Garantir a integridade dos dados nesta etapa evita o fenômeno conhecido como *G
 A execução do pipeline de dados gerou os seguintes indicadores estruturais e de negócios:
 
 * **Insight 1 (Dominância de Portfólio):** A categoria **Alimentos** é o principal motor volumétrico do varejo analisado, acumulando expressivas **9.672 movimentações**. Em contrapartida, a categoria **Acessórios** detém a menor participação de gôndola, registrando apenas **327 operações**. Campanhas de cross-selling podem usar a alta tração de alimentos para alavancar categorias menores.
-* **Insight 2 (Saneamento de Cadastro):** Foram detectadas e tratadas diversas linhas onde a categoria do produto encontrava-se vazia. Ao aplicar a regra de negócio condicional `if/else`, esses registros foram mapeados como **"Sem Categoria"**. Isso indica um gargalo técnico no ERP de origem, evidenciando que o campo de categoria não está configurado como obrigatório no momento do cadastro do item.
+* **Insight 2 (Saneamento de Cadastro):** Foram detectadas e treated diversas linhas onde a categoria do produto encontrava-se vazia. Ao aplicar a regra de negócio condicional `if/else`, esses registros foram mapeados como **"Sem Categoria"**. Isso indica um gargalo técnico no ERP de origem, evidenciando que o campo de categoria não está configurado como obrigatório no momento do cadastro do item.
 * **Insight 3 (Comportamento de Compra por Gênero):** O primeiro agrupamento estatístico automatizado isolou a volumetria de compras por gênero (`CL_GENERO`), revelando a exata distribuição de transações comerciais na base e oferecendo insumos para a personalização de jornadas de marketing.
 * **Problema Remanescente 1 (Qualidade do Extrator):** A presença de delimitadores sobressalentes (como `;;;` no final de cada registro observado no arquivo bruto) aponta que o script de exportação do banco de dados relacional de origem necessita de manutenção em suas configurações de fim de linha (*End of Line*).
 * **Problema Remanescente 2 (Inconsistência de IDs):** Foram identificados registros com inconsistências de caracteres em colunas identificadoras, o que exigiu blindagem de código com o argumento `errors='coerce'` para evitar a interrupção abrupta (*crash*) da aplicação durante a conversão em lote.
