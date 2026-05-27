@@ -106,6 +106,13 @@ A remoção de duplicidades e a padronização das informações foram fundament
 
 ---
 
+# 🔍 Análise Avançada: Recorrência e Granularidade dos Dados
+Ao analisar a recorrência de compras pelo mesmo CL_ID, observamos que a base possui uma granularidade transacional. O fato de o mesmo cliente adquirir o mesmo produto múltiplas vezes no mesmo dia indica o comportamento de compras fracionadas.
+
+Implicação Técnica: Para análises de fidelidade futura, será necessário consolidar esses registros por CL_ID, DATA e PR_NOME para evitar a duplicidade de contagem nas métricas de demanda.
+
+Comportamento do Consumidor: Este achado é fundamental para entender que cada registro representa um ato isolado de consumo, e não necessariamente o volume total de um item por visita única.
+
 # 🛠️ Tecnologias Utilizadas
 
 - Python

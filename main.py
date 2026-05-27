@@ -3,10 +3,6 @@
 # Aluna: Caroline de Souza Cunha Lopes
 # ==========================================
 
-# =========================
-# IMPORTAÇÃO DAS BIBLIOTECAS
-# =========================
-
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
@@ -21,64 +17,41 @@ if not os.path.exists('imagens'):
 # =========================
 
 print("Lendo base de dados...")
-
-# Leitura do arquivo
 df = pd.read_csv("Base_Varejo.csv", sep=";", encoding="latin1")
 
-# Correção: Remove colunas 'Unnamed' extras logo após a leitura
+# Remove colunas 'Unnamed' extras
 df = df.loc[:, ~df.columns.str.contains('^Unnamed')]
 
 print("\nBase carregada com sucesso!")
-
-# =========================
-# VISUALIZAÇÃO INICIAL
-# =========================
-
-print("\nPrimeiras linhas da base:")
-print(df.head())
-
-print("\nInformações gerais:")
-print(df.info())
-
-print("\nValores nulos:")
-print(df.isnull().sum())
 
 # =========================
 # REMOÇÃO DE DUPLICIDADES
 # =========================
 
 df = df.drop_duplicates()
-
 print("\nDuplicidades removidas!")
 
 # =========================
-# LIMPEZA DE COLUNAS TEXTUAIS
+# LIMPEZA DE COLUNAS E NULOS
 # =========================
 
-# Produto
+# Produto: Padronização
 if "PR_NOME" in df.columns:
     df["PR_NOME"] = df["PR_NOME"].astype(str).str.strip().str.title()
 
-# Categoria
+# Categoria: Tratamento com "Sem Categoria"
 if "PR_CAT" in df.columns:
-    df["PR_CAT"] = df["PR_CAT"].astype(str).str.strip().str.upper()
+    df["PR_CAT"] = df["PR_CAT"].fillna("Sem Categoria").astype(str).str.strip().str.upper()
 
-# =========================
-# TRATAMENTO DE DATAS
-# =========================
-
+# Tratamento de Datas
 if "DATA" in df.columns:
     df["DATA"] = pd.to_datetime(df["DATA"], dayfirst=True, errors="coerce")
-    print("\nDatas convertidas!")
+    print("Datas convertidas.")
 
-# =========================
-# TRATAMENTO DE VALORES NULOS
-# =========================
-
+# Número de filhos: Imputação pela mediana
 if "CL_FHL" in df.columns:
     mediana_filhos = df["CL_FHL"].median()
     df["CL_FHL"] = df["CL_FHL"].fillna(mediana_filhos)
-    print("\nValores nulos tratados!")
 
 # =========================
 # ESTATÍSTICA DESCRITIVA
@@ -86,12 +59,8 @@ if "CL_FHL" in df.columns:
 
 print("\n========== ESTATÍSTICA DESCRITIVA ==========")
 if "CL_FHL" in df.columns:
-    print(f"\nContagem Total: {df['CL_FHL'].count()}")
-    print(f"Média: {df['CL_FHL'].mean():.2f}")
-    print(f"Mediana: {df['CL_FHL'].median():.2f}")
-    print(f"Moda: {df['CL_FHL'].mode()[0]}")
-    print(f"Mínimo: {df['CL_FHL'].min()}")
-    print(f"Máximo: {df['CL_FHL'].max()}")
+    print(f"Média: {df['CL_FHL'].mean():.2f} | Mediana: {df['CL_FHL'].median():.2f}")
+    print(f"Moda: {df['CL_FHL'].mode()[0]} | Mínimo: {df['CL_FHL'].min()} | Máximo: {df['CL_FHL'].max()}")
 
 # =========================
 # AGRUPAMENTOS
@@ -107,43 +76,34 @@ if "PR_CAT" in df.columns:
     categorias = df.groupby("PR_CAT").size().reset_index(name="Total_Registros")
     print("\nVolume por Categoria:\n", categorias)
 
+# Análise de Recorrência (Mesmo Dia)
+print("\n========== ANÁLISE DE RECORRÊNCIA (MESMO DIA) ==========")
+if "CL_ID" in df.columns and "PR_NOME" in df.columns and "DATA" in df.columns:
+    recorrencia_diaria = df.groupby(['CL_ID', 'PR_NOME', 'DATA']).size().reset_index(name='Frequencia_No_Dia')
+    mesmo_dia = recorrencia_diaria[recorrencia_diaria['Frequencia_No_Dia'] > 1]
+    
+    print(f"Total de registros com compra repetida do mesmo item no mesmo dia: {len(mesmo_dia)}")
+    print(mesmo_dia.head())
+
 # =========================
 # CRIAÇÃO DOS GRÁFICOS
 # =========================
 
-# Gráfico 1 - Categorias
 if "PR_CAT" in df.columns:
     plt.figure(figsize=(10, 5))
     df["PR_CAT"].value_counts().plot(kind="bar")
     plt.title("Quantidade por Categoria")
-    plt.ylabel("Quantidade")
-    plt.xticks(rotation=45)
-    plt.tight_layout()
     plt.savefig("imagens/grafico_categoria.png")
-    plt.show()
-    print("\nGráfico de categorias salvo!")
 
-# Gráfico 2 - Produtos
 if "PR_NOME" in df.columns:
     plt.figure(figsize=(12, 5))
     df["PR_NOME"].value_counts().head(10).plot(kind="bar")
     plt.title("Top 10 Produtos")
-    plt.ylabel("Quantidade")
-    plt.xticks(rotation=45)
-    plt.tight_layout()
     plt.savefig("imagens/grafico_produtos.png")
-    plt.show()
-    print("\nGráfico de produtos salvo!")
 
 # =========================
-# EXPORTAÇÃO DA BASE LIMPA
+# EXPORTAÇÃO
 # =========================
 
 df.to_csv("df_limpo.csv", index=False)
-print("\nBase limpa exportada com sucesso!")
-
-# =========================
-# FINALIZAÇÃO
-# =========================
-
-print("\nProjeto executado com sucesso!")
+print("\nProjeto finalizado e base limpa exportada para 'df_limpo.csv'!")
