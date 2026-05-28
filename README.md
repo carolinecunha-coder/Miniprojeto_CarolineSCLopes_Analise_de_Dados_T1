@@ -107,7 +107,7 @@ A remoção de duplicidades e a padronização das informações foram fundament
 ---
 
 # 🔍 Análise Avançada: Recorrência e Granularidade dos Dados
-Ao analisar a recorrência de compras pelo mesmo CL_ID, observamos que a base possui uma granularidade transacional. O fato de o mesmo cliente adquirir o mesmo produto múltiplas vezes no mesmo dia indica o comportamento de compras fracionadas.
+Ao analisar a recorrência de compras pelo mesmo CL_ID, observa-se que a base possui uma granularidade transacional. O fato de o mesmo cliente adquirir o mesmo produto múltiplas vezes no mesmo dia indica o comportamento de compras fracionadas.
 
 Implicação Técnica: Para análises de fidelidade futura, será necessário consolidar esses registros por CL_ID, DATA e PR_NOME para evitar a duplicidade de contagem nas métricas de demanda.
 
@@ -181,5 +181,7 @@ O desenvolvimento deste mini-projeto permitiu aplicar conceitos fundamentais de:
 - estatística descritiva
 - agrupamentos analíticos
 - versionamento com Git e GitHub
+
+Este projeto demonstrou que a análise de dados vai além da simples manipulação de arquivos; a identificação da granularidade transacional e o entendimento do comportamento de compras fracionadas foram essenciais para garantir que nossas métricas de recorrência refletissem a realidade do consumo, evitando distorções analíticas.
 
 Além do aprendizado técnico, o projeto reforçou a importância da qualidade dos dados para apoiar análises confiáveis e tomadas de decisão mais assertivas.
